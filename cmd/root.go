@@ -60,9 +60,12 @@ func initConfig() {
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".promato")
+		// SafeWriteConfig will create an empty config file only if the file does not exist
+		viper.SafeWriteConfig()
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// todo: DO NOT support environment variables for now, add support in the future
+	//viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
