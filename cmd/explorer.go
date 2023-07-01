@@ -5,29 +5,36 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/alexeyco/simpletable"
+	"github.com/fatih/color"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"os"
 	"sort"
 	"time"
 )
 
-// explorerCmd represents the explorer command
-var explorerCmd = &cobra.Command{
-	Use:   "explorer",
+var exploreCmd = &cobra.Command{
+	Use:   "explore",
 	Short: "Metrics Explorer",
 	Long:  `Metrics Explorer`,
 	Run: func(cmd *cobra.Command, args []string) {
-		getMetadata()
+		handleExploreCmd()
 	},
 }
 
-func getMetadata() {
+func handleExploreCmd() {
+	if !viper.IsSet("url") {
+		color.Red("Error: Prometheus API URL is not set. Please use 'config' command to set URL.")
+		cobra.CheckErr(errors.New("prometheus url not found in config file"))
+	}
+
 	client, err := api.NewClient(api.Config{
-		Address: "http://localhost:9090",
+		Address: viper.GetString("url"),
 	})
 	if err != nil {
 		fmt.Printf("Error creating client: %v\n", err)
@@ -80,15 +87,5 @@ func getMetadata() {
 }
 
 func init() {
-	rootCmd.AddCommand(explorerCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// explorerCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// explorerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.AddCommand(exploreCmd)
 }
