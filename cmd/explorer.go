@@ -31,8 +31,9 @@ func handleExploreCmd() func(cmd *cobra.Command, args []string) {
 		checkConfig()
 		if len(args) == 0 {
 			exploreAllMetricSeries()
+		} else {
+			exploreSpecificMetricSeries(args[0])
 		}
-		exploreSpecificMetricSeries(args[0])
 	}
 }
 
